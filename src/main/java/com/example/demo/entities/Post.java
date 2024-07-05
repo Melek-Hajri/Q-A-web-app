@@ -1,0 +1,91 @@
+package com.example.demo.entities;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Entity
+public class Post implements Serializable {
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	Long id;
+	@ManyToOne
+	@JsonIgnoreProperties({"posts"})
+	User user;
+	String title;
+	String body;
+	@ElementCollection
+	@CollectionTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"))
+	@Column(name = "link")
+	List<String> links;
+	@OneToMany(mappedBy = "post")
+	@JsonIgnoreProperties({"post"})
+	List<Image> images;
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(
+		name = "post_tag",
+		joinColumns = @JoinColumn(name = "post_id"),
+		inverseJoinColumns = @JoinColumn(name = "tag_id")
+	)
+	Set<Tag> tags;
+	@OneToMany(mappedBy = "post")
+	@JsonIgnoreProperties({"post"})
+	List<Vote> votes;
+	@OneToMany(mappedBy = "post")
+	@JsonIgnoreProperties({"post"})
+	List<Answer >answers;
+	StatusType status;
+	@OneToMany(mappedBy = "post")
+	@JsonIgnoreProperties({"post"})
+	List<Comment> comments;
+	@Temporal(TemporalType.DATE)
+	Date creationDate;
+	@ElementCollection
+	@CollectionTable(name = "post_recommendedtags", joinColumns = @JoinColumn(name = "post_id"))
+	@Column(name = "tag_id")
+	List<Tag> recommendedTags;
+	@ManyToMany
+    @JoinTable(
+        name = "similar_posts",
+        joinColumns = @JoinColumn(name = "post_id"),
+        inverseJoinColumns = @JoinColumn(name = "similar_post_id")
+    )
+	List<Post> similarPosts;
+	//aiService: todo
+}

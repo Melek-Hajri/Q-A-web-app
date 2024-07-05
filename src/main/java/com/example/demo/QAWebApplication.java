@@ -9,10 +9,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @SpringBootApplication
-public class AppGestionNoteApplication implements WebMvcConfigurer {
+public class QAWebApplication implements WebMvcConfigurer {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AppGestionNoteApplication.class, args);
+		SpringApplication.run(QAWebApplication.class, args);
 	}
 	 @Override
 	    public void addCorsMappings(CorsRegistry registry) {

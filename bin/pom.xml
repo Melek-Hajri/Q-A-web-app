@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>tn.enicarthage</groupId>
-	<artifactId>app_gestion_note</artifactId>
+	<artifactId>QAWeb</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>app_gestion_note</name>
-	<description>app_gestion_note</description>
+	<name>QAWeb</name>
+	<description>QAWeb</description>
 	<properties>
 	  <maven.compiler.source>1.8</maven.compiler.source>
 	  <maven.compiler.target>1.8</maven.compiler.target>
