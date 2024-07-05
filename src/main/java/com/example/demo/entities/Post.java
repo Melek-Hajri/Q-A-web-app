@@ -67,6 +67,7 @@ public class Post implements Serializable {
 	@OneToMany(mappedBy = "post")
 	@JsonIgnoreProperties({"post"})
 	List<Vote> votes;
+	int voteCount;
 	@OneToMany(mappedBy = "post")
 	@JsonIgnoreProperties({"post"})
 	List<Answer >answers;
@@ -88,4 +89,17 @@ public class Post implements Serializable {
     )
 	List<Post> similarPosts;
 	//aiService: todo
+	
+	public void updateVoteCountOnAdd(VoteType vote) {
+		if (vote == VoteType.Upvote)
+			this.voteCount++;
+		else 
+			this.voteCount--;
+	}
+	public void updateVoteCountOnRemove(VoteType vote) {
+		if (vote == VoteType.Upvote)
+			this.voteCount--;
+		else 
+			this.voteCount++;
+	}
 }

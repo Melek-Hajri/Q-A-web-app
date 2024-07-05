@@ -47,9 +47,23 @@ public class Answer implements Serializable {
 	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"answer"})
 	List<Vote> votes;
+	int voteCount;
 	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"answer"})
 	List<Comment> comments;
 	@Temporal(TemporalType.DATE)
 	Date creationDate;
+	
+	public void updateVoteCountOnAdd(VoteType vote) {
+		if (vote == VoteType.Upvote)
+			this.voteCount++;
+		else 
+			this.voteCount--;
+	}
+	public void updateVoteCountOnRemove(VoteType vote) {
+		if (vote == VoteType.Upvote)
+			this.voteCount--;
+		else 
+			this.voteCount++;
+	}
 }

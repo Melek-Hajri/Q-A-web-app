@@ -48,6 +48,20 @@ public class Comment implements Serializable {
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"comment"})
 	List<Vote> votes;
+	int voteCount;
 	@Temporal(TemporalType.DATE)
 	Date creationDate;
+	
+	public void updateVoteCountOnAdd(VoteType vote) {
+		if (vote == VoteType.Upvote)
+			this.voteCount++;
+		else 
+			this.voteCount--;
+	}
+	public void updateVoteCountOnRemove(VoteType vote) {
+		if (vote == VoteType.Upvote)
+			this.voteCount--;
+		else 
+			this.voteCount++;
+	}
 }
