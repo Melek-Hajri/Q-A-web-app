@@ -6,14 +6,13 @@ import com.example.demo.entities.Comment;
 
 public interface ICommentService {
 	public Comment commentAdd(Comment comment);
-	public Comment commentFind(Long comment_id);
-	public List<Comment> commentFindAll();
-	public List<Comment> commentFindByUser(Long user_id);
-	public List<Comment> commentFindByPost(Long post_id);
-	public List<Comment> commentFindByAnswer(Long answer_id);
-	public void commentDelete(Long comment_id);
-	public void commentDeleteByUser(Long user_id);
-	public void commentDeleteByPost(Long post_id);
-	public void commentDeleteByAnswer(Long answer_id);
-	public Comment commentUpdate(Long comment_id, Comment updated_comment);
+	public Comment commentFind(Long commentId);
+	public List<Comment> commentFindByUser(Long userId);
+	public List<Comment> commentFindByPost(Long postId);
+	public List<Comment> commentFindByAnswer(Long answerId);
+	public void commentDelete(Long commentId);
+	public void commentDeleteByUser(Long userId);
+	public void commentDeleteByPost(Long postId);
+	public void commentDeleteByAnswer(Long answerId);
+	public Comment commentUpdate(Long commentId, Comment updatedComment);
 }

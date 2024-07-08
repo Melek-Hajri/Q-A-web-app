@@ -43,6 +43,8 @@ public class Comment implements Serializable {
 	@ManyToOne
 	@JsonIgnoreProperties({"comments"})
 	Post post;
+	@ManyToOne
+	@JsonIgnoreProperties({"comments"})
 	Answer answer;
 	String body;
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)

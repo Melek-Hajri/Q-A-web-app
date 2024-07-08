@@ -6,8 +6,8 @@ import com.example.demo.entities.User;
 
 public interface IUserService {
 	public User userAdd(User user);
-	public User userFind(Long user_id);
+	public User userFind(Long userId);
 	public List<User> userFindAll();
-	public void userDelete(Long user_id);
-	public User userUpdate(Long user_id, User updated_user);	
+	public void userDelete(Long userId);
+	public User userUpdate(Long userId, User updatedUser);	
 }

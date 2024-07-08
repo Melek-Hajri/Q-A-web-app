@@ -6,10 +6,10 @@ import com.example.demo.entities.Post;
 
 public interface IPostService {
 	public Post postAdd(Post post);
-	public Post postFind(Long post_id);
+	public Post postFind(Long postId);
 	public List<Post> answerFindAll();
-	public List<Post> postFindByUser(Long user_id);
-	public void postDelete(Long post_id);
-	public void postDeleteByUser(Long user_id);
-	public Post postUpdate(Long post_id, Post updated_post);
+	public List<Post> postFindByUser(Long userId);
+	public void postDelete(Long postId);
+	public void postDeleteByUser(Long userId);
+	public Post postUpdate(Long postId, Post updatedPost);
 }

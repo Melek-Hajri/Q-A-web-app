@@ -10,6 +10,8 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -71,6 +73,7 @@ public class Post implements Serializable {
 	@OneToMany(mappedBy = "post")
 	@JsonIgnoreProperties({"post"})
 	List<Answer >answers;
+	@Enumerated(EnumType.STRING)
 	StatusType status;
 	@OneToMany(mappedBy = "post")
 	@JsonIgnoreProperties({"post"})
