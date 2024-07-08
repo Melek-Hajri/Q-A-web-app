@@ -24,24 +24,11 @@ public class ImageController {
 
     @PostMapping("/Add")
     public ResponseEntity<Image> uploadImage(@RequestParam("file") MultipartFile file,
-                                             @RequestParam("post") Post post,
-                                             @RequestParam("answer") Answer answer,
-                                             @RequestParam("comment") Comment comment) throws IOException {
-        Image image = new Image();
-        image.setData(file.getBytes());
+                                             @RequestParam("postId") Long postId,
+                                             @RequestParam("answerId") Long answerId,
+                                             @RequestParam("commentId") Long commentId) throws IOException {
 
-        // Set post, answer, or comment based on the provided IDs
-        if (post != null) {
-            image.setPost(post);
-        }
-        if (answer != null) {
-            image.setAnswer(answer);
-        }
-        if (comment != null) {
-            image.setComment(comment);
-        }
-
-        Image savedImage = imageService.imageAdd(image);
+        Image savedImage = imageService.imageAdd(file.getBytes(), postId, answerId, commentId);
         return new ResponseEntity<>(savedImage, HttpStatus.CREATED);
     }
 

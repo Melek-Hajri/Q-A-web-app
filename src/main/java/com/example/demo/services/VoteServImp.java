@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.example.demo.entities.Answer;
 import com.example.demo.entities.Comment;
+import com.example.demo.entities.Image;
 import com.example.demo.entities.Post;
 import com.example.demo.entities.User;
 import com.example.demo.entities.Vote;
@@ -18,6 +19,7 @@ import com.example.demo.repository.IUserRepository;
 import com.example.demo.repository.IVoteRepository;
 
 public class VoteServImp implements IVoteService {
+	
 	@Autowired
 	private IVoteRepository voteRepo;
 	
@@ -41,23 +43,23 @@ public class VoteServImp implements IVoteService {
         vote.setUser(user);
         vote.setType(type);
 
-        if (postId != null) {
+        if (postId != null && answerId == null && commentId == null) {
             Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
             post.getVotes().add(vote);
             vote.setPost(post);
             post.updateVoteCountOnAdd(type);
-        } else if (answerId != null) {
+        } else if (answerId != null && postId == null && commentId == null) {
             Answer answer = this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
             answer.getVotes().add(vote);
             vote.setAnswer(answer);
             answer.updateVoteCountOnAdd(type);
-        } else if (commentId != null) {
+        } else if (commentId != null && postId == null && answerId == null) {
             Comment comment = this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
             comment.getVotes().add(vote);
             vote.setComment(comment);
             comment.updateVoteCountOnAdd(type);
         } else {
-            throw new IllegalArgumentException("Either postId, responseId, or commentId must be provided");
+            throw new IllegalArgumentException("Either postId, answerId, or commentId must be provided");
         }
 
         return voteRepo.save(vote);
@@ -118,26 +120,34 @@ public class VoteServImp implements IVoteService {
     @Override
     public void voteDeleteByUser(Long userId) {
         this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        this.voteRepo.voteDeleteByUser(userId);
+        for(Vote vote : this.voteRepo.voteFindByUser(userId)) {
+			this.voteCancel(vote.getId());
+		}
     }
     
     @Override
     public void voteDeleteByPost(Long postId) {
         this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
-        this.voteRepo.voteDeleteByPost(postId);
+        for(Vote vote : this.voteRepo.voteFindByPost(postId)) {
+			this.voteCancel(vote.getId());
+		}
 
     }
     
     @Override
     public void voteDeleteByAnswer(Long answerId) {
         this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
-        this.voteRepo.voteDeleteByAnswer(answerId);
+        for(Vote vote : this.voteRepo.voteFindByAnswer(answerId)) {
+			this.voteCancel(vote.getId());
+		}
     }
     
     @Override
     public void voteDeleteByComment(Long commentId) {
         this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
-        this.voteRepo.voteDeleteByComment(commentId);
+        for(Vote vote : this.voteRepo.voteFindByComment(commentId)) {
+			this.voteCancel(vote.getId());
+		}
     }
     
 }

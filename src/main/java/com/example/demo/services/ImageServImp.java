@@ -5,7 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.entities.Answer;
+import com.example.demo.entities.Comment;
 import com.example.demo.entities.Image;
+import com.example.demo.entities.Post;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.repository.IAnswerRepository;
 import com.example.demo.repository.ICommentRepository;
@@ -24,7 +27,24 @@ public class ImageServImp implements IImageService {
 	private ICommentRepository commentRepo;
 	
 	@Override
-	public Image imageAdd(Image image) {
+	public Image imageAdd(byte[] data, Long postId, Long answerId, Long commentId) {
+		Image image = new Image();
+		image.setData(data);
+		if (postId != null && answerId == null && commentId == null) {
+            Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+            post.getImages().add(image);
+            image.setPost(post);
+        } else if (answerId != null && postId == null && commentId == null) {
+            Answer answer = this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
+            answer.getImages().add(image);
+            image.setAnswer(answer);
+        } else if (commentId != null && postId == null && answerId == null) {
+            Comment comment = this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+            comment.getImages().add(image);
+            image.setComment(comment);
+        } else {
+            throw new IllegalArgumentException("Either postId, answerId, or commentId must be provided");
+        }
 		return this.imageRepo.save(image);
 	}
 	@Override 
@@ -52,22 +72,35 @@ public class ImageServImp implements IImageService {
 	}
 	@Override
 	public void imageDelete(Long imageId) {
-		this.imageRepo.findById(imageId).orElseThrow(() -> new ResourceNotFoundException("Image not found"));
+		Image image = this.imageRepo.findById(imageId).orElseThrow(() -> new ResourceNotFoundException("Image not found"));
+		if (image.getPost() != null) {
+			image.getPost().getImages().remove(image);
+        } else if (image.getAnswer() != null) {
+        	image.getAnswer().getImages().remove(image);
+        } else if (image.getComment() != null) {
+        	image.getComment().getImages().remove(image);
+        }
 		this.imageRepo.deleteById(imageId);
 	}
 	@Override
 	public void imageDeleteByPost(Long postId) {
 		this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
-		this.imageRepo.imageDeleteByPost(postId);
+		for(Image image : this.imageRepo.imageFindByPost(postId)) {
+			this.imageDelete(image.getId());
+		}
 	}
 	@Override
 	public void imageDeleteByAnswer(Long answerId) {
 		this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
-		this.imageRepo.imageDeleteByAnswer(answerId);
+		for(Image image : this.imageRepo.imageFindByAnswer(answerId)) {
+			this.imageDelete(image.getId());
+		}
 	}
 	@Override
 	public void imageDeleteByComment(Long commentId) {
 		this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
-		this.imageRepo.imageDeleteByComment(commentId);
+		for(Image image : this.imageRepo.imageFindByComment(commentId)) {
+			this.imageDelete(image.getId());
+		}
 	}
 }

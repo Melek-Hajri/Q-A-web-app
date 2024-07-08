@@ -5,10 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -44,6 +48,10 @@ public class Answer implements Serializable {
 	@JsonIgnoreProperties({"answers"})
 	Post post;
 	String body;
+	@ElementCollection
+	@CollectionTable(name = "answer_links", joinColumns = @JoinColumn(name = "answer_id"))
+	@Column(name = "link")
+	List<String> links;
 	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"answer"})
 	List<Vote> votes;
@@ -51,6 +59,9 @@ public class Answer implements Serializable {
 	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"answer"})
 	List<Comment> comments;
+	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties({"answer"})
+	List<Image> images;
 	@Temporal(TemporalType.DATE)
 	Date creationDate;
 	

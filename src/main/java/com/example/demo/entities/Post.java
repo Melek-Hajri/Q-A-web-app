@@ -53,7 +53,7 @@ public class Post implements Serializable {
 	String title;
 	String body;
 	@ElementCollection
-	@CollectionTable(name = "post_tags", joinColumns = @JoinColumn(name = "post_id"))
+	@CollectionTable(name = "post_links", joinColumns = @JoinColumn(name = "post_id"))
 	@Column(name = "link")
 	List<String> links;
 	@OneToMany(mappedBy = "post")
@@ -72,7 +72,7 @@ public class Post implements Serializable {
 	int voteCount;
 	@OneToMany(mappedBy = "post")
 	@JsonIgnoreProperties({"post"})
-	List<Answer >answers;
+	List<Answer> answers;
 	@Enumerated(EnumType.STRING)
 	StatusType status;
 	@OneToMany(mappedBy = "post")

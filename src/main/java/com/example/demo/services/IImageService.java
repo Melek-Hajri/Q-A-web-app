@@ -5,7 +5,7 @@ import java.util.List;
 import com.example.demo.entities.Image;
 
 public interface IImageService {
-	public Image imageAdd(Image image);
+	public Image imageAdd(byte[] data, Long postId, Long answerId, Long commentId);
 	public Image imageFind(Long image_id);
 	public List<Image> imageFindAll();
 	public List<Image> imageFindByPost(Long post_id);

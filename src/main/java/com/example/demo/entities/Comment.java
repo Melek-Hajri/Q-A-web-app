@@ -5,10 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -47,10 +51,17 @@ public class Comment implements Serializable {
 	@JsonIgnoreProperties({"comments"})
 	Answer answer;
 	String body;
+	@ElementCollection
+	@CollectionTable(name = "comment_links", joinColumns = @JoinColumn(name = "comment_id"))
+	@Column(name = "link")
+	List<String> links;
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"comment"})
 	List<Vote> votes;
 	int voteCount;
+	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+	@JsonIgnoreProperties({"comment"})
+	List<Image> images;
 	@Temporal(TemporalType.DATE)
 	Date creationDate;
 	

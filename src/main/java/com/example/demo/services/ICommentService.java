@@ -5,7 +5,7 @@ import java.util.List;
 import com.example.demo.entities.Comment;
 
 public interface ICommentService {
-	public Comment commentAdd(Comment comment);
+	public Comment commentAdd(Long userId, Long postId, Long answerId, String body, List<String> links, List<byte[]> images);
 	public Comment commentFind(Long commentId);
 	public List<Comment> commentFindByUser(Long userId);
 	public List<Comment> commentFindByPost(Long postId);
