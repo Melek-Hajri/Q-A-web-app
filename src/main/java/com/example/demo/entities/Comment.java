@@ -38,30 +38,40 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Comment implements Serializable {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"comments"})
 	User user;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"comments"})
 	Post post;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"comments"})
 	Answer answer;
+	
 	String body;
+	
 	@ElementCollection
 	@CollectionTable(name = "comment_links", joinColumns = @JoinColumn(name = "comment_id"))
 	@Column(name = "link")
 	List<String> links;
+	
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"comment"})
 	List<Vote> votes;
+	
 	int voteCount;
+	
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties({"comment"})
 	List<Image> images;
+	
 	@Temporal(TemporalType.DATE)
 	Date creationDate;
 	
@@ -71,6 +81,7 @@ public class Comment implements Serializable {
 		else 
 			this.voteCount--;
 	}
+	
 	public void updateVoteCountOnRemove(VoteType vote) {
 		if (vote == VoteType.Upvote)
 			this.voteCount--;

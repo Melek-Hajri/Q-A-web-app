@@ -2,7 +2,10 @@ package com.example.demo.services;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.demo.entities.Answer;
 import com.example.demo.entities.Comment;
@@ -18,6 +21,7 @@ import com.example.demo.repository.IPostRepository;
 import com.example.demo.repository.IUserRepository;
 import com.example.demo.repository.IVoteRepository;
 
+@Service
 public class VoteServImp implements IVoteService {
 	
 	@Autowired
@@ -36,6 +40,7 @@ public class VoteServImp implements IVoteService {
     private ICommentRepository commentRepo;
     
     @Override
+    @Transactional
     public Vote voteCast(Long userId, Long postId, Long answerId, Long commentId, VoteType type) {
         User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         
@@ -61,6 +66,7 @@ public class VoteServImp implements IVoteService {
         } else {
             throw new IllegalArgumentException("Either postId, answerId, or commentId must be provided");
         }
+        user.getVotes().add(vote);
 
         return voteRepo.save(vote);
     }
@@ -100,9 +106,13 @@ public class VoteServImp implements IVoteService {
     }
     
     @Override 
+    @Transactional
     public void voteCancel(Long voteId) {
         Vote vote = this.voteRepo.findById(voteId).orElseThrow(() -> new ResourceNotFoundException("Vote not found"));
         
+        if(vote.getUser() != null) {
+        	vote.getUser().getVotes().remove(vote);
+        }
         if (vote.getPost() != null) {
             vote.getPost().getVotes().remove(vote);
             vote.getPost().updateVoteCountOnRemove(vote.getType());
@@ -118,6 +128,7 @@ public class VoteServImp implements IVoteService {
     }
     
     @Override
+    @Transactional
     public void voteDeleteByUser(Long userId) {
         this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         for(Vote vote : this.voteRepo.voteFindByUser(userId)) {
@@ -126,6 +137,7 @@ public class VoteServImp implements IVoteService {
     }
     
     @Override
+    @Transactional
     public void voteDeleteByPost(Long postId) {
         this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
         for(Vote vote : this.voteRepo.voteFindByPost(postId)) {
@@ -135,6 +147,7 @@ public class VoteServImp implements IVoteService {
     }
     
     @Override
+    @Transactional
     public void voteDeleteByAnswer(Long answerId) {
         this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
         for(Vote vote : this.voteRepo.voteFindByAnswer(answerId)) {
@@ -143,6 +156,7 @@ public class VoteServImp implements IVoteService {
     }
     
     @Override
+    @Transactional
     public void voteDeleteByComment(Long commentId) {
         this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
         for(Vote vote : this.voteRepo.voteFindByComment(commentId)) {

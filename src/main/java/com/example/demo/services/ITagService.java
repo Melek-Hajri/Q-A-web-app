@@ -5,7 +5,7 @@ import java.util.List;
 import com.example.demo.entities.Tag;
 
 public interface ITagService {
-	public Tag tagAdd(Tag tag);
+	public Tag tagAdd(String name);
 	public Tag tagFind(Long tagId);
 	public List<Tag> tagFindAll();
 	public List<Tag> tagFindByPost(Long postId);

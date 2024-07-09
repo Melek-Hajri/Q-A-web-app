@@ -2,6 +2,8 @@ package com.example.demo.services;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,16 +19,21 @@ import com.example.demo.repository.IPostRepository;
 
 @Service
 public class ImageServImp implements IImageService {
+	
 	@Autowired
 	private IImageRepository imageRepo;
+	
 	@Autowired
 	private IPostRepository postRepo;
+	
 	@Autowired
 	private IAnswerRepository answerRepo;
+	
 	@Autowired
 	private ICommentRepository commentRepo;
 	
 	@Override
+	@Transactional
 	public Image imageAdd(byte[] data, Long postId, Long answerId, Long commentId) {
 		Image image = new Image();
 		image.setData(data);
@@ -47,30 +54,37 @@ public class ImageServImp implements IImageService {
         }
 		return this.imageRepo.save(image);
 	}
+	
 	@Override 
 	public Image imageFind(Long imageId) {
 		return this.imageRepo.findById(imageId).orElseThrow(() -> new ResourceNotFoundException("Image not found"));
 	}
+	
 	@Override
 	public List<Image> imageFindAll() {
 		return this.imageRepo.findAll();
 	}
+	
 	@Override
 	public List<Image> imageFindByPost(Long postId) {
 		this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 		return this.imageRepo.imageFindByPost(postId);
 	}
+	
 	@Override
 	public List<Image> imageFindByAnswer(Long answerId) {
 		this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
 		return this.imageRepo.imageFindByAnswer(answerId);
 	}
+	
 	@Override
 	public List<Image> imageFindByComment(Long commentId) {
 		this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 		return this.imageRepo.imageFindByComment(commentId);
 	}
+	
 	@Override
+	@Transactional
 	public void imageDelete(Long imageId) {
 		Image image = this.imageRepo.findById(imageId).orElseThrow(() -> new ResourceNotFoundException("Image not found"));
 		if (image.getPost() != null) {
@@ -82,21 +96,27 @@ public class ImageServImp implements IImageService {
         }
 		this.imageRepo.deleteById(imageId);
 	}
+	
 	@Override
+	@Transactional
 	public void imageDeleteByPost(Long postId) {
 		this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 		for(Image image : this.imageRepo.imageFindByPost(postId)) {
 			this.imageDelete(image.getId());
 		}
 	}
+	
 	@Override
+	@Transactional
 	public void imageDeleteByAnswer(Long answerId) {
 		this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
 		for(Image image : this.imageRepo.imageFindByAnswer(answerId)) {
 			this.imageDelete(image.getId());
 		}
 	}
+	
 	@Override
+	@Transactional
 	public void imageDeleteByComment(Long commentId) {
 		this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
 		for(Image image : this.imageRepo.imageFindByComment(commentId)) {

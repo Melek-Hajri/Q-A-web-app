@@ -18,10 +18,4 @@ public interface IImageRepository extends JpaRepository<Image, Long>{
     List<Image> imageFindByAnswer(@Param("answerId") Long answerId);
 	@Query("SELECT i FROM Image i WHERE i.comment.id = :commentId")
     List<Image> imageFindByComment(@Param("commentId") Long commentId);
-	@Query("DELETE FROM Image i WHERE i.post.id = :postId")
-    void imageDeleteByPost(@Param("postId") Long postId);
-	@Query("DELETE FROM Image i WHERE i.answer.id = :answerId")
-    void imageDeleteByAnswer(@Param("answerId") Long answerId);
-	@Query("DELETE FROM Image i WHERE i.comment.id = :commentId")
-    void imageDeleteByComment(@Param("commentId") Long commentId);
 }

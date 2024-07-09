@@ -15,8 +15,4 @@ public interface IAnswerRepository extends JpaRepository<Answer, Long>{
     List<Answer> answerFindByPost(@Param("postId") Long postId);
 	@Query("SELECT a FROM Answer a WHERE a.user.id = :userId")
     List<Answer> answerFindByUser(@Param("userId") Long userId);
-	@Query("DELETE FROM Answer a WHERE a.post.id = :postId")
-    void answerDeleteByPost(@Param("postId") Long postId);
-	@Query("DELETE FROM Answer a WHERE a.user.id = :userId")
-    void answerDeleteByUser(@Param("userId") Long userId);
 }

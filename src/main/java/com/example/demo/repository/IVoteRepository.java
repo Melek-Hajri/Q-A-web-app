@@ -19,12 +19,4 @@ public interface IVoteRepository extends JpaRepository<Vote, Long>{
     List<Vote> voteFindByComment(@Param("commentId") Long commentId);
 	@Query("SELECT v FROM Vote v WHERE v.user.id = :userId")
     List<Vote> voteFindByUser(@Param("userId") Long userId);
-	@Query("DELETE FROM Vote v WHERE v.post.id = :postId")
-    void voteDeleteByPost(@Param("postId") Long postId);
-	@Query("DELETE FROM Vote v WHERE v.answer.id = :answerId")
-    void voteDeleteByAnswer(@Param("answerId") Long answerId);
-	@Query("DELETE FROM Vote v WHERE v.comment.id = :commentId")
-    void voteDeleteByComment(@Param("commentId") Long commentId);
-	@Query("DELETE FROM Vote v WHERE v.user.id = :userId")
-    void voteDeleteByUser(@Param("userId") Long userId);
 }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +16,9 @@ import com.example.demo.entities.User;
 import com.example.demo.entities.exceptions.ImpossibleUpdateException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.repository.IAnswerRepository;
-import com.example.demo.repository.ICommentRepository;
 import com.example.demo.repository.IImageRepository;
 import com.example.demo.repository.IPostRepository;
 import com.example.demo.repository.IUserRepository;
-import com.example.demo.repository.IVoteRepository;
 
 @Service
 public class AnswerServImp implements IAnswerService{
@@ -33,15 +33,19 @@ public class AnswerServImp implements IAnswerService{
 	private IUserRepository userRepo;
 	
 	@Autowired
+	private ImageServImp imageService;
+	
+	@Autowired
 	private IImageRepository imageRepo;
 	
 	@Autowired
 	private CommentServImp commentService;
 	
 	@Autowired
-	private IVoteRepository voteRepo;
+	private VoteServImp voteService;
 	
 	@Override
+	@Transactional
 	public Answer answerAdd(Long userId, Long postId, String body, List<String> links, List<byte[]> images) {
 		User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Post post = postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
@@ -87,6 +91,7 @@ public class AnswerServImp implements IAnswerService{
 	}
 	
 	@Override
+	@Transactional
 	public void answerDelete(Long answerId) {
 		Answer answer = this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
 		if(answer.getPost() != null) {
@@ -97,13 +102,14 @@ public class AnswerServImp implements IAnswerService{
 			User user = answer.getUser();
 			user.getAnswers().remove(answer);
 		}
-		this.imageRepo.imageDeleteByAnswer(answerId);
+		this.imageService.imageDeleteByAnswer(answerId);
 		this.commentService.commentDeleteByAnswer(answerId);
-		this.voteRepo.voteDeleteByAnswer(answerId);
-		this.answerRepo.delete(answer);
+		this.voteService.voteDeleteByAnswer(answerId);
+		this.answerRepo.deleteById(answerId);
 	}
 	
 	@Override
+	@Transactional
 	public void answerDeleteByPost(Long postId) {
 		this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 		for(Answer answer : this.answerRepo.answerFindByPost(postId)) {
@@ -112,6 +118,7 @@ public class AnswerServImp implements IAnswerService{
 	}
 	
 	@Override
+	@Transactional
 	public void answerDeleteByUser(Long userId) {
 		this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 		for(Answer answer : this.answerRepo.answerFindByUser(userId)) {
@@ -120,6 +127,7 @@ public class AnswerServImp implements IAnswerService{
 	}
 	
 	@Override
+	@Transactional
 	public Answer answerUpdate(Long answerId, Answer updatedAnswer) {
 		Answer answer = this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
 		if(!answer.getComments().isEmpty() || !answer.getVotes().isEmpty())

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.example.demo.entities.Answer;
 import com.example.demo.entities.Comment;
@@ -19,6 +20,7 @@ import com.example.demo.repository.IPostRepository;
 import com.example.demo.repository.IUserRepository;
 import com.example.demo.repository.IVoteRepository;
 
+@Service
 public class CommentServImp implements ICommentService {
 
 	@Autowired
@@ -32,6 +34,12 @@ public class CommentServImp implements ICommentService {
 	
 	@Autowired
 	private IImageRepository imageRepo;
+	
+	@Autowired
+	private ImageServImp imageService;
+	
+	@Autowired
+	private VoteServImp voteService;
 	
 	@Autowired
 	private ICommentRepository commentRepo;
@@ -113,8 +121,8 @@ public class CommentServImp implements ICommentService {
 			Answer answer = comment.getAnswer();
 			answer.getComments().remove(comment);
 		}
-		this.imageRepo.imageDeleteByComment(commentId);
-		this.voteRepo.voteDeleteByComment(commentId);
+		this.imageService.imageDeleteByComment(commentId);
+		this.voteService.voteDeleteByComment(commentId);
 		this.commentRepo.deleteById(commentId);
 	}
 	

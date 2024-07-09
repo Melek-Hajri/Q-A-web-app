@@ -28,18 +28,23 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Image {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
+	
 	@Lob
 	@Column(name = "data", columnDefinition = "LONGBLOB")
 	byte[] data;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"images"})
 	Post post;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"images"})
 	Answer answer;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"images"})
 	Comment comment;

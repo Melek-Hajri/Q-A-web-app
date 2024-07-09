@@ -12,5 +12,5 @@ import com.example.demo.entities.Post;
 @Repository
 public interface IPostRepository extends JpaRepository<Post, Long>{
 	@Query("SELECT p FROM Post p WHERE p.user.id = :userId")
-	List<Post> postFindByUser(@Param("postId") Long postId);
+	List<Post> postFindByUser(@Param("userId") Long userId);
 }

@@ -44,21 +44,28 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Post implements Serializable {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"posts"})
 	User user;
+	
 	String title;
+	
 	String body;
+	
 	@ElementCollection
 	@CollectionTable(name = "post_links", joinColumns = @JoinColumn(name = "post_id"))
 	@Column(name = "link")
 	List<String> links;
+	
 	@OneToMany(mappedBy = "post")
 	@JsonIgnoreProperties({"post"})
 	List<Image> images;
+	
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(
 		name = "post_tag",
@@ -66,24 +73,32 @@ public class Post implements Serializable {
 		inverseJoinColumns = @JoinColumn(name = "tag_id")
 	)
 	Set<Tag> tags;
+	
 	@OneToMany(mappedBy = "post")
 	@JsonIgnoreProperties({"post"})
 	List<Vote> votes;
+	
 	int voteCount;
+	
 	@OneToMany(mappedBy = "post")
 	@JsonIgnoreProperties({"post"})
 	List<Answer> answers;
-	@Enumerated(EnumType.STRING)
+	
+	@Enumerated(EnumType.ORDINAL)
 	StatusType status;
+	
 	@OneToMany(mappedBy = "post")
 	@JsonIgnoreProperties({"post"})
 	List<Comment> comments;
+	
 	@Temporal(TemporalType.DATE)
 	Date creationDate;
+	
 	@ElementCollection
 	@CollectionTable(name = "post_recommendedtags", joinColumns = @JoinColumn(name = "post_id"))
 	@Column(name = "tag_id")
 	List<Tag> recommendedTags;
+	
 	@ManyToMany
     @JoinTable(
         name = "similar_posts",
@@ -91,6 +106,7 @@ public class Post implements Serializable {
         inverseJoinColumns = @JoinColumn(name = "similar_post_id")
     )
 	List<Post> similarPosts;
+	
 	//aiService: todo
 	
 	public void updateVoteCountOnAdd(VoteType vote) {
@@ -99,6 +115,7 @@ public class Post implements Serializable {
 		else 
 			this.voteCount--;
 	}
+	
 	public void updateVoteCountOnRemove(VoteType vote) {
 		if (vote == VoteType.Upvote)
 			this.voteCount--;

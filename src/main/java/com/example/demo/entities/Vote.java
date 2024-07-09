@@ -32,20 +32,26 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Vote implements Serializable {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
-	@Enumerated(EnumType.STRING)
+	
+	@Enumerated(EnumType.ORDINAL)
 	VoteType type;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"votes"})
 	User user;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"votes"})
 	Post post;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"votes"})
 	Answer answer;
+	
 	@ManyToOne
 	@JsonIgnoreProperties({"votes"})
 	Comment comment;
