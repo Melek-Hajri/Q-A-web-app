@@ -38,14 +38,14 @@ public class Image {
 	byte[] data;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"images"})
+	@JsonIgnoreProperties({"images", "answers", "comments", "votes"})
 	Post post;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"images"})
+	@JsonIgnoreProperties({"images", "post", "comments", "votes"})
 	Answer answer;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"images"})
+	@JsonIgnoreProperties({"images", "answer", "post", "votes"})
 	Comment comment;
 }

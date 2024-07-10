@@ -62,13 +62,13 @@ public class Comment implements Serializable {
 	@Column(name = "link")
 	List<String> links;
 	
-	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties({"comment"})
 	List<Vote> votes;
 	
 	int voteCount;
 	
-	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties({"comment"})
 	List<Image> images;
 	

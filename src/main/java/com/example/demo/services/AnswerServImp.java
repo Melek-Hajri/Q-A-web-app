@@ -17,8 +17,6 @@ import com.example.demo.entities.exceptions.ImpossibleUpdateException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.repository.IAnswerRepository;
 import com.example.demo.repository.IImageRepository;
-import com.example.demo.repository.IPostRepository;
-import com.example.demo.repository.IUserRepository;
 
 @Service
 public class AnswerServImp implements IAnswerService{
@@ -27,28 +25,19 @@ public class AnswerServImp implements IAnswerService{
 	private IAnswerRepository answerRepo;
 	
 	@Autowired
-	private IPostRepository postRepo;
+	private PostServImp postService;
 	
 	@Autowired
-	private IUserRepository userRepo;
-	
-	@Autowired
-	private ImageServImp imageService;
+	private UserServImp userService;
 	
 	@Autowired
 	private IImageRepository imageRepo;
 	
-	@Autowired
-	private CommentServImp commentService;
-	
-	@Autowired
-	private VoteServImp voteService;
-	
 	@Override
 	@Transactional
 	public Answer answerAdd(Long userId, Long postId, String body, List<String> links, List<byte[]> images) {
-		User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        Post post = postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+		User user = this.userService.userFind(userId);
+        Post post = this.postService.postFind(postId);
 
         Answer answer = new Answer();
         answer.setUser(user);
@@ -80,20 +69,20 @@ public class AnswerServImp implements IAnswerService{
 	
 	@Override
 	public List<Answer> answerFindByPost(Long postId) {
-		this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+		this.postService.postFind(postId);
 		return this.answerRepo.answerFindByPost(postId);
 	}
 	
 	@Override
 	public List<Answer> answerFindByUser(Long userId) {
-		this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		this.userService.userFind(userId);
 		return this.answerRepo.answerFindByUser(userId);
 	}
 	
 	@Override
 	@Transactional
 	public void answerDelete(Long answerId) {
-		Answer answer = this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
+		Answer answer = this.answerFind(answerId);
 		if(answer.getPost() != null) {
 			Post post = answer.getPost();
 			post.getAnswers().remove(answer);
@@ -102,16 +91,13 @@ public class AnswerServImp implements IAnswerService{
 			User user = answer.getUser();
 			user.getAnswers().remove(answer);
 		}
-		this.imageService.imageDeleteByAnswer(answerId);
-		this.commentService.commentDeleteByAnswer(answerId);
-		this.voteService.voteDeleteByAnswer(answerId);
 		this.answerRepo.deleteById(answerId);
 	}
 	
 	@Override
 	@Transactional
 	public void answerDeleteByPost(Long postId) {
-		this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+		this.postService.postFind(postId);
 		for(Answer answer : this.answerRepo.answerFindByPost(postId)) {
 			this.answerDelete(answer.getId());
 		}
@@ -120,7 +106,7 @@ public class AnswerServImp implements IAnswerService{
 	@Override
 	@Transactional
 	public void answerDeleteByUser(Long userId) {
-		this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		this.userService.userFind(userId);
 		for(Answer answer : this.answerRepo.answerFindByUser(userId)) {
 			this.answerDelete(answer.getId());
 		}
@@ -129,7 +115,7 @@ public class AnswerServImp implements IAnswerService{
 	@Override
 	@Transactional
 	public Answer answerUpdate(Long answerId, Answer updatedAnswer) {
-		Answer answer = this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
+		Answer answer = this.answerFind(answerId);
 		if(!answer.getComments().isEmpty() || !answer.getVotes().isEmpty())
 			throw new ImpossibleUpdateException("Impossible to modify this answer beacuse it was already voted or commented");
 		answer.setBody(updatedAnswer.getBody());

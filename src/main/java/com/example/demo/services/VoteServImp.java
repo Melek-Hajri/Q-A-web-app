@@ -9,16 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.entities.Answer;
 import com.example.demo.entities.Comment;
-import com.example.demo.entities.Image;
 import com.example.demo.entities.Post;
 import com.example.demo.entities.User;
 import com.example.demo.entities.Vote;
 import com.example.demo.entities.VoteType;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
-import com.example.demo.repository.IAnswerRepository;
-import com.example.demo.repository.ICommentRepository;
-import com.example.demo.repository.IPostRepository;
-import com.example.demo.repository.IUserRepository;
 import com.example.demo.repository.IVoteRepository;
 
 @Service
@@ -28,38 +23,38 @@ public class VoteServImp implements IVoteService {
 	private IVoteRepository voteRepo;
 	
 	@Autowired
-    private IUserRepository userRepo;
+    private UserServImp userService;
 
     @Autowired
-    private IPostRepository postRepo;
+    private PostServImp postService;
 
     @Autowired
-    private IAnswerRepository answerRepo;
+    private AnswerServImp answerService;
 
     @Autowired
-    private ICommentRepository commentRepo;
+    private CommentServImp commentService;
     
     @Override
     @Transactional
     public Vote voteCast(Long userId, Long postId, Long answerId, Long commentId, VoteType type) {
-        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+        User user = this.userService.userFind(userId);
         
         Vote vote = new Vote();
         vote.setUser(user);
         vote.setType(type);
 
         if (postId != null && answerId == null && commentId == null) {
-            Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+            Post post = this.postService.postFind(postId);
             post.getVotes().add(vote);
             vote.setPost(post);
             post.updateVoteCountOnAdd(type);
         } else if (answerId != null && postId == null && commentId == null) {
-            Answer answer = this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
+            Answer answer = this.answerService.answerFind(answerId);
             answer.getVotes().add(vote);
             vote.setAnswer(answer);
             answer.updateVoteCountOnAdd(type);
         } else if (commentId != null && postId == null && answerId == null) {
-            Comment comment = this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+            Comment comment = this.commentService.commentFind(commentId);
             comment.getVotes().add(vote);
             vote.setComment(comment);
             comment.updateVoteCountOnAdd(type);
@@ -83,32 +78,32 @@ public class VoteServImp implements IVoteService {
     
     @Override
     public List<Vote> voteFindByUser(Long userId) {
-        this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    	this.userService.userFind(userId);
         return this.voteRepo.voteFindByUser(userId);
     }
     
     @Override
     public List<Vote> voteFindByPost(Long postId) {
-        this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+    	this.postService.postFind(postId);
         return this.voteRepo.voteFindByPost(postId);
     }
     
     @Override
     public List<Vote> voteFindByAnswer(Long answerId) {
-        this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
+    	this.answerService.answerFind(answerId);
         return this.voteRepo.voteFindByAnswer(answerId);
     }
     
     @Override
     public List<Vote> voteFindByComment(Long commentId) {
-        this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
+    	this.commentService.commentFind(commentId);
         return this.voteRepo.voteFindByComment(commentId);
     }
     
     @Override 
     @Transactional
     public void voteCancel(Long voteId) {
-        Vote vote = this.voteRepo.findById(voteId).orElseThrow(() -> new ResourceNotFoundException("Vote not found"));
+        Vote vote = this.voteFind(voteId);
         
         if(vote.getUser() != null) {
         	vote.getUser().getVotes().remove(vote);
@@ -130,8 +125,8 @@ public class VoteServImp implements IVoteService {
     @Override
     @Transactional
     public void voteDeleteByUser(Long userId) {
-        this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        for(Vote vote : this.voteRepo.voteFindByUser(userId)) {
+        User user = this.userService.userFind(userId);
+        for(Vote vote : user.getVotes()) {
 			this.voteCancel(vote.getId());
 		}
     }
@@ -139,8 +134,8 @@ public class VoteServImp implements IVoteService {
     @Override
     @Transactional
     public void voteDeleteByPost(Long postId) {
-        this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
-        for(Vote vote : this.voteRepo.voteFindByPost(postId)) {
+        Post post = this.postService.postFind(postId);
+        for(Vote vote : post.getVotes()) {
 			this.voteCancel(vote.getId());
 		}
 
@@ -149,8 +144,8 @@ public class VoteServImp implements IVoteService {
     @Override
     @Transactional
     public void voteDeleteByAnswer(Long answerId) {
-        this.answerRepo.findById(answerId).orElseThrow(() -> new ResourceNotFoundException("Answer not found"));
-        for(Vote vote : this.voteRepo.voteFindByAnswer(answerId)) {
+        Answer answer = this.answerService.answerFind(answerId);
+        for(Vote vote : answer.getVotes()) {
 			this.voteCancel(vote.getId());
 		}
     }
@@ -158,10 +153,18 @@ public class VoteServImp implements IVoteService {
     @Override
     @Transactional
     public void voteDeleteByComment(Long commentId) {
-        this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment not found"));
-        for(Vote vote : this.voteRepo.voteFindByComment(commentId)) {
+        Comment comment = this.commentService.commentFind(commentId);
+        for(Vote vote : comment.getVotes()) {
 			this.voteCancel(vote.getId());
 		}
+    }
+    
+    @Override
+    @Transactional
+    public Vote voteUpdate(Long voteId, Vote updatedVote) {
+    	Vote vote = this.voteFind(voteId);
+    	vote.setType(updatedVote.getType());
+    	return this.voteRepo.save(vote);
     }
     
 }

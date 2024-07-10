@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.entities.Image;
-import com.example.demo.entities.Tag;
 
 @Repository
 public interface IImageRepository extends JpaRepository<Image, Long>{

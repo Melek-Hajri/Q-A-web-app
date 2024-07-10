@@ -1,8 +1,6 @@
 package com.example.demo.entities;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -41,5 +39,6 @@ public class Tag implements Serializable {
 	String name;
 	
 	@ManyToMany(mappedBy = "tags")
+	@JsonIgnoreProperties({"tags", "user", "answers", "comments", "images", "votes"})
 	Set<Post> posts;
 }

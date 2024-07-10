@@ -58,17 +58,17 @@ public class Answer implements Serializable {
 	@Column(name = "link")
 	List<String> links;
 	
-	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties({"answer"})
 	List<Vote> votes;
 	
 	int voteCount;
 	
-	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties({"answer"})
 	List<Comment> comments;
 	
-	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties({"answer"})
 	List<Image> images;
 	

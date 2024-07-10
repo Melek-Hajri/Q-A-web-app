@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.example.demo.entities.Post;
 import com.example.demo.entities.Tag;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
-import com.example.demo.repository.IPostRepository;
 import com.example.demo.repository.ITagRepository;
 
 @Service
@@ -21,7 +20,7 @@ public class TagServImp implements ITagService{
 	private ITagRepository tagRepo;
 	
 	@Autowired
-	private IPostRepository postRepo;
+	private PostServImp postService;
 	
 	@Override
 	@Transactional
@@ -47,14 +46,14 @@ public class TagServImp implements ITagService{
 	
 	@Override
 	public List<Tag> tagFindByPost(Long postId){
-		this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+		this.postService.postFind(postId);
 		return this.tagRepo.tagFindByPost(postId);
 	}
 	
 	@Override
 	@Transactional
 	public void tagDelete(Long tagId) {
-		Tag tag = this.tagRepo.findById(tagId).orElseThrow(() -> new ResourceNotFoundException("Tag not found"));
+		Tag tag = this.tagFind(tagId);
 		if(tag.getPosts() != null) {
 			for(Post post : tag.getPosts()) {
 				post.getTags().remove(tag);
@@ -66,7 +65,7 @@ public class TagServImp implements ITagService{
 	@Override
 	@Transactional
 	public Tag tagUpdate(Long tagId, Tag updatedTag) {
-		Tag tag = this.tagRepo.findById(tagId).orElseThrow(() -> new ResourceNotFoundException("Tag not found"));
+		Tag tag = this.tagFind(tagId);
 		tag.setName(updatedTag.getName());
 		this.tagRepo.save(tag);
 		return tag;

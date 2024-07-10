@@ -11,7 +11,6 @@ import com.example.demo.entities.RoleType;
 import com.example.demo.entities.User;
 import com.example.demo.entities.exceptions.ResourceAlreadyExistsException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
-import com.example.demo.services.IUserService;
 import com.example.demo.services.UserServImp;
 
 @RestController

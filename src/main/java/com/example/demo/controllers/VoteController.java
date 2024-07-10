@@ -23,9 +23,10 @@ public class VoteController {
                                          @RequestParam(required = false) Long postId,
                                          @RequestParam(required = false) Long answerId,
                                          @RequestParam(required = false) Long commentId,
-                                         @RequestParam VoteType type) {
+                                         @RequestParam int voteValue) {
 
         try {
+        	VoteType type = VoteType.fromValue(voteValue);
             Vote savedVote = voteService.voteCast(userId, postId, answerId, commentId, type);
             return new ResponseEntity<>(savedVote, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
@@ -134,6 +135,17 @@ public class VoteController {
         try {
             voteService.voteDeleteByComment(commentId);
             return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    
+    @PutMapping("/Update/{voteId}")
+    public ResponseEntity<Vote> updateVote(@PathVariable Long voteId,
+    		                               @RequestBody Vote updatedVote) {
+    	try {
+            Vote updated = voteService.voteUpdate(voteId, updatedVote);
+            return ResponseEntity.ok(updated);
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.notFound().build();
         }

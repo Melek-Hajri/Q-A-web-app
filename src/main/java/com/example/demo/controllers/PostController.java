@@ -1,7 +1,6 @@
 package com.example.demo.controllers;
 
 import com.example.demo.entities.Post;
-import com.example.demo.entities.RoleType;
 import com.example.demo.entities.StatusType;
 import com.example.demo.entities.exceptions.ImpossibleUpdateException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;

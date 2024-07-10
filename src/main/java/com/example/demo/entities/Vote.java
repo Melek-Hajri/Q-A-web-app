@@ -1,8 +1,6 @@
 package com.example.demo.entities;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -41,18 +39,18 @@ public class Vote implements Serializable {
 	VoteType type;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"votes"})
+	@JsonIgnoreProperties({"votes", "posts", "answers", "comments"})
 	User user;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"votes"})
+	@JsonIgnoreProperties({"votes", "user", "answers", "comments", "images"})
 	Post post;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"votes"})
+	@JsonIgnoreProperties({"votes", "user", "post", "comments", "images"})
 	Answer answer;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"votes"})
+	@JsonIgnoreProperties({"votes", "user", "post", "answer", "images"})
 	Comment comment;
 }

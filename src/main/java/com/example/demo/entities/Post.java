@@ -20,7 +20,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -50,7 +49,7 @@ public class Post implements Serializable {
 	Long id;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"posts"})
+	@JsonIgnoreProperties({"posts", "answers", "comments", "votes"})
 	User user;
 	
 	String title;
@@ -62,7 +61,7 @@ public class Post implements Serializable {
 	@Column(name = "link")
 	List<String> links;
 	
-	@OneToMany(mappedBy = "post")
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties({"post"})
 	List<Image> images;
 	
@@ -74,21 +73,21 @@ public class Post implements Serializable {
 	)
 	Set<Tag> tags;
 	
-	@OneToMany(mappedBy = "post")
-	@JsonIgnoreProperties({"post"})
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnoreProperties({"post", "user", "answer", "comment"})
 	List<Vote> votes;
 	
 	int voteCount;
 	
-	@OneToMany(mappedBy = "post")
-	@JsonIgnoreProperties({"post"})
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnoreProperties({"post", "comments", "votes", "user"})
 	List<Answer> answers;
 	
 	@Enumerated(EnumType.ORDINAL)
 	StatusType status;
 	
-	@OneToMany(mappedBy = "post")
-	@JsonIgnoreProperties({"post"})
+	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnoreProperties({"post", "user", "answer", "votes"})
 	List<Comment> comments;
 	
 	@Temporal(TemporalType.DATE)

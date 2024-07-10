@@ -18,4 +18,5 @@ public interface IVoteService {
 	public void voteDeleteByPost(Long postId);
 	public void voteDeleteByAnswer(Long answerId);
 	public void voteDeleteByComment(Long commentId);
+	public Vote voteUpdate(Long voteId, Vote updatedVote);
 }
