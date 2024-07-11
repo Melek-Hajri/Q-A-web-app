@@ -12,7 +12,5 @@ import com.example.demo.entities.Tag;
 
 @Repository
 public interface ITagRepository extends JpaRepository<Tag, Long>{
-	@Query("SELECT t FROM Tag t JOIN t.posts p WHERE p.id = :postId")
-    List<Tag> tagFindByPost(@Param("postId") Long postId);
     Optional<Tag> findByName(String tagName);
 }

@@ -2,7 +2,6 @@ package com.example.demo.services;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -68,14 +67,12 @@ public class PostServImp implements IPostService {
 	@Transactional
 	public void setPostTags(Long postId, List<Long> tagIds) {
 		Post post = this.postFind(postId);
-		post.setTags(new HashSet<>());
+		if(post.getTags() == null && !tagIds.isEmpty()) {
+			post.setTags(new ArrayList<>());
+		}	
 		for(Long id : tagIds) {
 			Tag tag = this.TagService.tagFind(id);
 			post.getTags().add(tag);
-			if(tag.getPosts() == null) {
-				tag.setPosts(new HashSet<>());
-			}
-			tag.getPosts().add(post);
 		}
 	}
 
@@ -102,11 +99,6 @@ public class PostServImp implements IPostService {
 		if(post.getUser() != null) {
 			User user = post.getUser();
 			user.getPosts().remove(post);
-		}
-		if(post.getTags() != null) {
-			for(Tag tag : post.getTags()) {
-				tag.getPosts().remove(post);
-			}
 		}
 		this.postRepo.deleteById(postId);
 	}

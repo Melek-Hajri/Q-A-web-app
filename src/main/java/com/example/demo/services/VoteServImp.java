@@ -14,6 +14,7 @@ import com.example.demo.entities.User;
 import com.example.demo.entities.Vote;
 import com.example.demo.entities.VoteType;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
+import com.example.demo.entities.exceptions.UserAlreadyVotedException;
 import com.example.demo.repository.IVoteRepository;
 
 @Service
@@ -44,16 +45,22 @@ public class VoteServImp implements IVoteService {
         vote.setType(type);
 
         if (postId != null && answerId == null && commentId == null) {
+        	if(this.voteRepo.voteFindByUserPost(postId, userId).isPresent())
+        		throw new UserAlreadyVotedException("This user has already voted this post");
             Post post = this.postService.postFind(postId);
             post.getVotes().add(vote);
             vote.setPost(post);
             post.updateVoteCountOnAdd(type);
         } else if (answerId != null && postId == null && commentId == null) {
+        	if(this.voteRepo.voteFindByUserAnswer(postId, userId).isPresent())
+        		throw new UserAlreadyVotedException("This user has already voted this answer");
             Answer answer = this.answerService.answerFind(answerId);
             answer.getVotes().add(vote);
             vote.setAnswer(answer);
             answer.updateVoteCountOnAdd(type);
         } else if (commentId != null && postId == null && answerId == null) {
+        	if(this.voteRepo.voteFindByUserComment(postId, userId).isPresent())
+        		throw new UserAlreadyVotedException("This user has already voted this comment");
             Comment comment = this.commentService.commentFind(commentId);
             comment.getVotes().add(vote);
             vote.setComment(comment);

@@ -10,7 +10,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,7 +40,4 @@ public class Tag implements Serializable {
 	@Column(unique = true, nullable = false)
 	String name;
 	
-	@ManyToMany(mappedBy = "tags")
-	@JsonIgnoreProperties({"tags", "user", "answers", "comments", "images", "votes"})
-	Set<Post> posts;
 }

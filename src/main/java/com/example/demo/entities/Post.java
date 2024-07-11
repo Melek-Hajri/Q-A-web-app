@@ -3,7 +3,6 @@ package com.example.demo.entities;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -71,7 +70,7 @@ public class Post implements Serializable {
 		joinColumns = @JoinColumn(name = "post_id"),
 		inverseJoinColumns = @JoinColumn(name = "tag_id")
 	)
-	Set<Tag> tags;
+	List<Tag> tags;
 	
 	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnoreProperties({"post", "user", "answer", "comment"})

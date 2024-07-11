@@ -46,19 +46,14 @@ public class TagServImp implements ITagService{
 	
 	@Override
 	public List<Tag> tagFindByPost(Long postId){
-		this.postService.postFind(postId);
-		return this.tagRepo.tagFindByPost(postId);
+		Post post = this.postService.postFind(postId);
+		return post.getTags();
 	}
 	
 	@Override
 	@Transactional
 	public void tagDelete(Long tagId) {
 		Tag tag = this.tagFind(tagId);
-		if(tag.getPosts() != null) {
-			for(Post post : tag.getPosts()) {
-				post.getTags().remove(tag);
-			}
-		}
 		this.tagRepo.deleteById(tagId);
 	}
 	
