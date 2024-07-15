@@ -10,8 +10,10 @@ import com.example.demo.entities.Answer;
 import com.example.demo.entities.Comment;
 import com.example.demo.entities.Image;
 import com.example.demo.entities.Post;
+import com.example.demo.entities.StatusType;
 import com.example.demo.entities.User;
 import com.example.demo.entities.exceptions.ImpossibleUpdateException;
+import com.example.demo.entities.exceptions.PostSolvedException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.repository.ICommentRepository;
 import com.example.demo.repository.IImageRepository;
@@ -46,10 +48,15 @@ public class CommentServImp implements ICommentService {
         
         if (postId != null && answerId == null) {
             Post post = this.postService.postFind(postId);
+            if(post.getStatus() == StatusType.Solved)
+        		throw new PostSolvedException();
             post.getComments().add(comment);
             comment.setPost(post);
         } else if (answerId != null && postId == null) {
             Answer answer = this.answerService.answerFind(answerId);
+            if(answer.getPost().getStatus() == StatusType.Solved) {
+    			throw new PostSolvedException();
+    		}
             answer.getComments().add(comment);
             comment.setAnswer(answer);
         } else {
@@ -102,10 +109,16 @@ public class CommentServImp implements ICommentService {
 		}
 		if(comment.getPost() != null) {
 			Post post = comment.getPost();
+			if(post.getStatus() == StatusType.Solved) {
+				throw new PostSolvedException();
+			}
 			post.getComments().remove(comment);
 		}
 		if(comment.getAnswer() != null) {
 			Answer answer = comment.getAnswer();
+			if(answer.getPost().getStatus() == StatusType.Solved) {
+				throw new PostSolvedException();
+			}
 			answer.getComments().remove(comment);
 		}
 		this.commentRepo.deleteById(commentId);
@@ -135,11 +148,19 @@ public class CommentServImp implements ICommentService {
 	@Override
 	public Comment commentUpdate(Long commentId, Comment updatedComment) {
 		Comment comment= this.commentFind(commentId);
-		if(!comment.getVotes().isEmpty())
+		if(comment.getPost().getStatus() == StatusType.Solved) {
+			throw new PostSolvedException();
+		} else if(!comment.getVotes().isEmpty())
 			throw new ImpossibleUpdateException("Impossible to modify this comment beacuse it was already voted");
 		comment.setBody(updatedComment.getBody());
 		comment.setLinks(updatedComment.getLinks());
-		comment.setImages(updatedComment.getImages());
+		if(updatedComment.getImages() != null) {
+			if(comment.getImages() == null) {
+				comment.setImages(new ArrayList<>());
+			}
+			comment.getImages().clear();
+			comment.setImages(updatedComment.getImages());
+		}
 		return this.commentRepo.save(comment);
 	}
 }

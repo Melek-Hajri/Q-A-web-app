@@ -44,15 +44,15 @@ public class Comment implements Serializable {
 	Long id;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"comments"})
+	@JsonIgnoreProperties({"comments", "posts", "answers", "voets"})
 	User user;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"comments"})
+	@JsonIgnoreProperties({"comments", "answers", "votes", "images", "user"})
 	Post post;
 	
 	@ManyToOne
-	@JsonIgnoreProperties({"comments"})
+	@JsonIgnoreProperties({"comments", "post", "votes", "images", "user"})
 	Answer answer;
 	
 	String body;
@@ -63,13 +63,13 @@ public class Comment implements Serializable {
 	List<String> links;
 	
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnoreProperties({"comment"})
+	@JsonIgnoreProperties({"comment", "post", "answer", "user"})
 	List<Vote> votes;
 	
 	int voteCount;
 	
 	@OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnoreProperties({"comment"})
+	@JsonIgnoreProperties({"comment", "post", "answer"})
 	List<Image> images;
 	
 	@Temporal(TemporalType.DATE)

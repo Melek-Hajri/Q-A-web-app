@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import com.example.demo.entities.Answer;
 import com.example.demo.entities.Comment;
 import com.example.demo.entities.Post;
+import com.example.demo.entities.StatusType;
 import com.example.demo.entities.User;
 import com.example.demo.entities.Vote;
 import com.example.demo.entities.VoteType;
+import com.example.demo.entities.exceptions.PostSolvedException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.entities.exceptions.UserAlreadyVotedException;
 import com.example.demo.repository.IVoteRepository;
@@ -48,6 +50,8 @@ public class VoteServImp implements IVoteService {
         	if(this.voteRepo.voteFindByUserPost(postId, userId).isPresent())
         		throw new UserAlreadyVotedException("This user has already voted this post");
             Post post = this.postService.postFind(postId);
+            if(post.getStatus() == StatusType.Solved)
+        		throw new PostSolvedException();
             post.getVotes().add(vote);
             vote.setPost(post);
             post.updateVoteCountOnAdd(type);
@@ -55,6 +59,9 @@ public class VoteServImp implements IVoteService {
         	if(this.voteRepo.voteFindByUserAnswer(postId, userId).isPresent())
         		throw new UserAlreadyVotedException("This user has already voted this answer");
             Answer answer = this.answerService.answerFind(answerId);
+            if(answer.getPost().getStatus() == StatusType.Solved) {
+    			throw new PostSolvedException();
+    		}
             answer.getVotes().add(vote);
             vote.setAnswer(answer);
             answer.updateVoteCountOnAdd(type);
@@ -62,6 +69,9 @@ public class VoteServImp implements IVoteService {
         	if(this.voteRepo.voteFindByUserComment(postId, userId).isPresent())
         		throw new UserAlreadyVotedException("This user has already voted this comment");
             Comment comment = this.commentService.commentFind(commentId);
+            if(comment.getPost().getStatus() == StatusType.Solved) {
+    			throw new PostSolvedException();
+    		}
             comment.getVotes().add(vote);
             vote.setComment(comment);
             comment.updateVoteCountOnAdd(type);
@@ -111,7 +121,9 @@ public class VoteServImp implements IVoteService {
     @Transactional
     public void voteCancel(Long voteId) {
         Vote vote = this.voteFind(voteId);
-        
+        if(vote.getPost().getStatus() == StatusType.Solved) {
+			throw new PostSolvedException();
+		}
         if(vote.getUser() != null) {
         	vote.getUser().getVotes().remove(vote);
         }
@@ -170,7 +182,12 @@ public class VoteServImp implements IVoteService {
     @Transactional
     public Vote voteUpdate(Long voteId, Vote updatedVote) {
     	Vote vote = this.voteFind(voteId);
+    	if(vote.getPost().getStatus() == StatusType.Solved) {
+			throw new PostSolvedException();
+		}
+    	vote.getPost().updateVoteCountOnRemove(vote.getType());
     	vote.setType(updatedVote.getType());
+    	vote.getPost().updateVoteCountOnAdd(vote.getType());
     	return this.voteRepo.save(vote);
     }
     

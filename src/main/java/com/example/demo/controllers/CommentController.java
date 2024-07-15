@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.entities.Comment;
 import com.example.demo.entities.exceptions.ImpossibleUpdateException;
+import com.example.demo.entities.exceptions.PostSolvedException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.services.CommentServImp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,13 @@ public class CommentController {
             Comment savedComment = commentService.commentAdd(userId, postId, answerId, body, links, images);
             return new ResponseEntity<>(savedComment, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
+        	System.out.println(e);
             return ResponseEntity.badRequest().build(); // Handle bad request
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         } catch (Exception e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Handle other exceptions
         }
     }
@@ -42,6 +48,7 @@ public class CommentController {
             Comment comment = commentService.commentFind(commentId);
             return ResponseEntity.ok(comment);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -52,6 +59,7 @@ public class CommentController {
             List<Comment> comments = commentService.commentFindByUser(userId);
             return ResponseEntity.ok(comments);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -62,6 +70,7 @@ public class CommentController {
             List<Comment> comments = commentService.commentFindByPost(postId);
             return ResponseEntity.ok(comments);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -72,6 +81,7 @@ public class CommentController {
             List<Comment> comments = commentService.commentFindByAnswer(answerId);
             return ResponseEntity.ok(comments);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -82,7 +92,11 @@ public class CommentController {
             commentService.commentDelete(commentId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 
@@ -92,6 +106,7 @@ public class CommentController {
             commentService.commentDeleteByPost(postId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -102,6 +117,7 @@ public class CommentController {
             commentService.commentDeleteByAnswer(answerId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -112,9 +128,14 @@ public class CommentController {
             Comment comment = commentService.commentUpdate(commentId, updatedComment);
             return ResponseEntity.ok(comment);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         } catch (ImpossibleUpdateException e) {
+        	System.out.println(e);
             return ResponseEntity.badRequest().build();
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 }

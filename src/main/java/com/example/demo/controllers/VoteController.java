@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.entities.Vote;
 import com.example.demo.entities.VoteType;
+import com.example.demo.entities.exceptions.PostSolvedException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.services.VoteServImp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,11 @@ public class VoteController {
             Vote savedVote = voteService.voteCast(userId, postId, answerId, commentId, type);
             return new ResponseEntity<>(savedVote, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
+        	System.out.println(e);
             return ResponseEntity.badRequest().build();
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 
@@ -40,6 +45,7 @@ public class VoteController {
             Vote vote = voteService.voteFind(voteId);
             return ResponseEntity.ok(vote);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -56,6 +62,7 @@ public class VoteController {
             List<Vote> votes = voteService.voteFindByUser(userId);
             return ResponseEntity.ok(votes);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -66,6 +73,7 @@ public class VoteController {
             List<Vote> votes = voteService.voteFindByPost(postId);
             return ResponseEntity.ok(votes);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -76,6 +84,7 @@ public class VoteController {
             List<Vote> votes = voteService.voteFindByAnswer(answerId);
             return ResponseEntity.ok(votes);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -86,6 +95,7 @@ public class VoteController {
             List<Vote> votes = voteService.voteFindByComment(commentId);
             return ResponseEntity.ok(votes);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -96,7 +106,11 @@ public class VoteController {
             voteService.voteCancel(voteId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 
@@ -106,6 +120,7 @@ public class VoteController {
             voteService.voteDeleteByUser(userId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -116,6 +131,7 @@ public class VoteController {
             voteService.voteDeleteByPost(postId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -126,6 +142,7 @@ public class VoteController {
             voteService.voteDeleteByAnswer(answerId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -136,6 +153,7 @@ public class VoteController {
             voteService.voteDeleteByComment(commentId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -147,7 +165,11 @@ public class VoteController {
             Vote updated = voteService.voteUpdate(voteId, updatedVote);
             return ResponseEntity.ok(updated);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 }

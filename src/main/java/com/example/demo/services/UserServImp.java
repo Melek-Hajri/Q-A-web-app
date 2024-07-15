@@ -5,9 +5,13 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
+import org.dom4j.util.UserDataAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.DTOs.SignupDTO;
+import com.example.demo.DTOs.userDTO;
 import com.example.demo.entities.RoleType;
 import com.example.demo.entities.User;
 import com.example.demo.entities.exceptions.ResourceAlreadyExistsException;
@@ -18,6 +22,20 @@ public class UserServImp implements IUserService{
 	
 	@Autowired
     private IUserRepository userRepo;
+	
+	@Override
+	@Transactional
+	public userDTO createUser(SignupDTO signupDTO) {
+		User user = new User();
+		user.setEmail(signupDTO.getEmail());
+		user.setUsername(signupDTO.getUsername());
+		user.setPassword(new BCryptPasswordEncoder().encode(signupDTO.getPassword()));
+		user.setRole(RoleType.SimpleUser);
+		User createdUser = userRepo.save(user);
+		userDTO createdUserDTO = new userDTO();
+		createdUserDTO.setId(createdUser.getId());
+		return createdUserDTO;
+	}
 	
 	@Override
 	@Transactional

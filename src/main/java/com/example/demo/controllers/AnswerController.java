@@ -12,20 +12,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entities.Answer;
 import com.example.demo.entities.exceptions.ImpossibleUpdateException;
+import com.example.demo.entities.exceptions.PostSolvedException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.services.AnswerServImp;
 
+@RestController
+@RequestMapping("/answers")
 public class AnswerController {
 	@Autowired
     private AnswerServImp answerService;
 
     @PostMapping("/Add")
-    public ResponseEntity<Answer> answerAdd(@RequestParam Long userId,
-                                            @RequestParam Long postId,
+    public ResponseEntity<Answer> answerAdd(@RequestParam(required = true) Long userId,
+                                            @RequestParam(required = true) Long postId,
                                             @RequestParam String body,
                                             @RequestParam List<String> links,
                                             @RequestParam List<byte[]> images) {
@@ -33,7 +38,11 @@ public class AnswerController {
             Answer addedAnswer = answerService.answerAdd(userId, postId, body, links, images);
             return ResponseEntity.status(HttpStatus.CREATED).body(addedAnswer);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 
@@ -43,6 +52,7 @@ public class AnswerController {
             Answer foundAnswer = answerService.answerFind(answerId);
             return ResponseEntity.ok(foundAnswer);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -53,6 +63,7 @@ public class AnswerController {
             List<Answer> answers = answerService.answerFindByPost(postId);
             return ResponseEntity.ok(answers);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -63,6 +74,7 @@ public class AnswerController {
             List<Answer> answers = answerService.answerFindByUser(userId);
             return ResponseEntity.ok(answers);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -73,7 +85,11 @@ public class AnswerController {
             answerService.answerDelete(answerId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 
@@ -83,6 +99,7 @@ public class AnswerController {
             answerService.answerDeleteByPost(postId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -93,6 +110,7 @@ public class AnswerController {
             answerService.answerDeleteByUser(userId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
@@ -104,9 +122,14 @@ public class AnswerController {
             Answer updated = answerService.answerUpdate(answerId, updatedAnswer);
             return ResponseEntity.ok(updated);
         } catch (ImpossibleUpdateException e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 

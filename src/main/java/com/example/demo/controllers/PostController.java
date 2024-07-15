@@ -3,6 +3,7 @@ package com.example.demo.controllers;
 import com.example.demo.entities.Post;
 import com.example.demo.entities.StatusType;
 import com.example.demo.entities.exceptions.ImpossibleUpdateException;
+import com.example.demo.entities.exceptions.PostSolvedException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.services.PostServImp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ public class PostController {
             Post savedPost = postService.postAdd(userId, title, body, links, images, status);
             return new ResponseEntity<>(savedPost, HttpStatus.CREATED);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -42,7 +44,11 @@ public class PostController {
             postService.setPostTags(postId, tagIds);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
+        } catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 
@@ -52,6 +58,7 @@ public class PostController {
             Post post = postService.postFind(postId);
             return ResponseEntity.ok(post);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -61,6 +68,7 @@ public class PostController {
             List<Post> posts = postService.postFindByUser(userId);
             return ResponseEntity.ok(posts);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -77,6 +85,7 @@ public class PostController {
             postService.postDelete(postId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -87,6 +96,7 @@ public class PostController {
             postService.postDeleteByUser(userId);
             return ResponseEntity.noContent().build();
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         }
     }
@@ -97,9 +107,14 @@ public class PostController {
             Post post = postService.postUpdate(postId, updatedPost);
             return ResponseEntity.ok(post);
         } catch (ResourceNotFoundException e) {
+        	System.out.println(e);
             return ResponseEntity.notFound().build();
         } catch (ImpossibleUpdateException e) {
+        	System.out.println(e);
             return ResponseEntity.badRequest().build();
+        }  catch (PostSolvedException e) {
+        	System.out.println(e);
+        	return ResponseEntity.badRequest().build();
         }
     }
 }

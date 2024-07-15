@@ -12,8 +12,10 @@ import org.springframework.stereotype.Service;
 import com.example.demo.entities.Answer;
 import com.example.demo.entities.Image;
 import com.example.demo.entities.Post;
+import com.example.demo.entities.StatusType;
 import com.example.demo.entities.User;
 import com.example.demo.entities.exceptions.ImpossibleUpdateException;
+import com.example.demo.entities.exceptions.PostSolvedException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.repository.IAnswerRepository;
 import com.example.demo.repository.IImageRepository;
@@ -38,7 +40,8 @@ public class AnswerServImp implements IAnswerService{
 	public Answer answerAdd(Long userId, Long postId, String body, List<String> links, List<byte[]> images) {
 		User user = this.userService.userFind(userId);
         Post post = this.postService.postFind(postId);
-
+        if(post.getStatus() == StatusType.Solved)
+    		throw new PostSolvedException();
         Answer answer = new Answer();
         answer.setUser(user);
         answer.setPost(post);
@@ -83,6 +86,9 @@ public class AnswerServImp implements IAnswerService{
 	@Transactional
 	public void answerDelete(Long answerId) {
 		Answer answer = this.answerFind(answerId);
+		if(answer.getPost().getStatus() == StatusType.Solved) {
+			throw new PostSolvedException();
+		}
 		if(answer.getPost() != null) {
 			Post post = answer.getPost();
 			post.getAnswers().remove(answer);
@@ -116,11 +122,25 @@ public class AnswerServImp implements IAnswerService{
 	@Transactional
 	public Answer answerUpdate(Long answerId, Answer updatedAnswer) {
 		Answer answer = this.answerFind(answerId);
-		if(!answer.getComments().isEmpty() || !answer.getVotes().isEmpty())
+		if(answer.getPost().getStatus() == StatusType.Solved) {
+			throw new PostSolvedException();
+		} else if(!answer.getComments().isEmpty() || !answer.getVotes().isEmpty())
 			throw new ImpossibleUpdateException("Impossible to modify this answer beacuse it was already voted or commented");
 		answer.setBody(updatedAnswer.getBody());
-		answer.setLinks(updatedAnswer.getLinks());
-		answer.setImages(updatedAnswer.getImages());
+		if(updatedAnswer.getLinks() != null) {
+			if(answer.getLinks() == null) {
+				answer.setLinks(new ArrayList<String>());
+			}
+			answer.getLinks().clear();
+			answer.setLinks(updatedAnswer.getLinks());
+		}
+		if(updatedAnswer.getImages() != null) {
+			if(answer.getImages() == null) {
+				answer.setImages(new ArrayList<>());
+			}
+			answer.getImages().clear();
+			answer.setImages(updatedAnswer.getImages());
+		}
 		return this.answerRepo.save(answer);
 	}
 }

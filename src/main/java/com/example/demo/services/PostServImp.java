@@ -15,6 +15,7 @@ import com.example.demo.entities.StatusType;
 import com.example.demo.entities.Tag;
 import com.example.demo.entities.User;
 import com.example.demo.entities.exceptions.ImpossibleUpdateException;
+import com.example.demo.entities.exceptions.PostSolvedException;
 import com.example.demo.entities.exceptions.ResourceNotFoundException;
 import com.example.demo.repository.IImageRepository;
 import com.example.demo.repository.IPostRepository;
@@ -117,14 +118,21 @@ public class PostServImp implements IPostService {
 	public Post postUpdate(Long postId, Post updatedPost) {
 		Post post = this.postFind(postId);
 		if(post.getStatus() == StatusType.Solved) {
-			throw new ImpossibleUpdateException("Post is already solved and can't be modified");
+			throw new PostSolvedException();
 		} else if(!post.getAnswers().isEmpty() || !post.getComments().isEmpty() || !post.getVotes().isEmpty()) {
 			throw new ImpossibleUpdateException("Post has already been commented, answered or voted and can't be modified");
 		} else {
+			
 			post.setTitle(updatedPost.getTitle());
 			post.setBody(updatedPost.getBody());
 			post.setLinks(updatedPost.getLinks());
-			post.setImages(updatedPost.getImages());
+			if(updatedPost.getImages() != null) {
+				if(post.getImages() == null) {
+					post.setImages(new ArrayList<>());
+				}
+				post.getImages().clear();
+				post.setImages(updatedPost.getImages());
+			}
 			post.setStatus(updatedPost.getStatus());
 			return this.postRepo.save(post);
 		}
