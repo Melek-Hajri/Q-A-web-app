@@ -2,6 +2,8 @@ package com.example.demo.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,7 +24,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter{
 				.csrf().disable()
 	            .authorizeRequests(authorizeRequests ->
 	                authorizeRequests
-	                    .antMatchers("/signup").permitAll()
+	                    .antMatchers("/signup", "/authenticate").permitAll()
 	                    .anyRequest().authenticated()
 	            )
 	            .formLogin(formLogin ->
@@ -45,5 +47,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter{
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+	
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+		
+		return configuration.getAuthenticationManager();
 	}
 }
